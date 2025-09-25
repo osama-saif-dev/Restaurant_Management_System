@@ -149,3 +149,21 @@ export const resetPassword = asyncHandler(async (req, res) => {
      await user.save();
      res.status(200).json({ success: true, message: 'Updated Password Successfully' });
 });
+
+// Contact Us
+export const contactUs = asyncHandler(async (req, res) => {
+    const { message } = req.body;
+    const { name, email } = req.user;
+
+    if (!message || message.trim() === '') {
+        throw new CustomError('Message Is Required', 400);
+    }
+
+    await sendEmail({
+        to: process.env.EMAIL_USER,
+        subject: 'New Contact Us Message',
+        text: `Name: ${name}\nEmail: ${email}\nMessage: ${message}`
+    });
+
+    res.status(200).json({ success: true, message: 'Message sent successfully' });
+});
