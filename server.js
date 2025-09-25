@@ -3,6 +3,8 @@ import { config } from 'dotenv';
 import connectDb from "./utils/db.js";
 import cors from "cors";
 import authRouter from "./routes/authRouter.route.js";
+import dashboardRouter from "./routes/dashboardRouter.route.js";
+import userRouter from "./routes/userRouter.route.js";
 
 // Setup
 config();
@@ -14,9 +16,14 @@ app.use(cors());
 
 // Routes
 app.use('/api/auth', authRouter);
+app.use('/api/admin', dashboardRouter);
+app.use('/user', userRouter); 
 
 // Handle Errors
 app.use((err, req, res, next) => {
+  if (err.code === "LIMIT_UNEXPECTED_FILE") {
+    return res.status(400).json({ message: "عدد الملفات أكبر من المطلوب" });
+  }
     res.status(err.code || 500).json({
         success: false,
         message: err.message || 'Server Error',
