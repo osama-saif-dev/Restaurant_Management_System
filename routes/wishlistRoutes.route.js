@@ -9,16 +9,18 @@ import {
 
 const router = express.Router();
 
+router.use(protecteRoute);
+
 // get all wishlist items for logged in user
-router.get("/", protecteRoute, getWishlist);
+router.get("/", getWishlist);
 
 // add a product to wishlist
-router.post("/:productId", protecteRoute, addToWishlist);
+router.post("/:productId", addToWishlist);
 
 // remove a specific product from wishlist
-router.delete("/:productId", protecteRoute, removeFromWishlist);
+router.delete("/:productId", removeFromWishlist);
 
 // clear wishlist
-router.delete("/", protecteRoute, clearWishlist);
+router.delete("/", clearWishlist);
 
 export default router;

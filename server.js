@@ -6,6 +6,7 @@ import authRouter from "./routes/authRouter.route.js";
 import dashboardRouter from "./routes/dashboardRouter.route.js";
 import userRouter from "./routes/userRouter.route.js";
 import wishlistRoutes from "./routes/wishlistRoutes.route.js";
+import CartRoutes from "./routes/cartRoutes.route.js";
 
 // Setup
 config();
@@ -20,6 +21,7 @@ app.use("/api/auth", authRouter);
 app.use("/api/admin", dashboardRouter);
 app.use("/user", userRouter);
 app.use("/api/wishlist", wishlistRoutes);
+app.use("/api/cart", CartRoutes);
 
 // Handle Errors
 app.use((err, req, res, next) => {
