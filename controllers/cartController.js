@@ -10,7 +10,13 @@ export const getCart = asyncHandler(async (req, res) => {
     "items.product",
     "name price discountedPrice image"
   );
-  res.status(200).json(cart || { items: [] });
+
+  const totalPrice = cart.items.reduce(
+    (sum, i) => sum + i.priceAtAdd * i.quantity,
+    0
+  );
+
+  res.status(200).json({ ...cart.toObject(), totalPrice } || { items: [] });
 });
 
 // Add or update product in cart
@@ -19,7 +25,7 @@ export const addToCart = asyncHandler(async (req, res) => {
   const { productId, quantity = 1 } = req.body;
 
   if (!mongoose.Types.ObjectId.isValid(productId))
-    throw new CustomError("Invalid productId", 400);
+    throw new CustomError("Invalid product", 400);
 
   const product = await Product.findById(productId).select(
     "name price discountedPrice image isAvailable quantity"

@@ -23,7 +23,7 @@ export const addToWishlist = asyncHandler(async (req, res) => {
   const { productId } = req.params;
 
   if (!mongoose.Types.ObjectId.isValid(productId)) {
-    throw new CustomError("Invalid productId", 400);
+    throw new CustomError("Invalid product", 400);
   }
 
   // ensure product exists
@@ -31,6 +31,21 @@ export const addToWishlist = asyncHandler(async (req, res) => {
     "_id isAvailable name"
   );
   if (!product) throw new CustomError("Product not found", 404);
+
+  // check if already in wishlist
+  const exists = await WishlistItem.findOne({
+    user: userId,
+    product: productId,
+  });
+  if (exists) {
+    return res.status(200).json({
+      message: "Product already in wishlist",
+      item: await exists.populate({
+        path: "product",
+        select: "name price image",
+      }),
+    });
+  }
 
   // create wishlist item (unique index prevents duplicates)
   const item = await WishlistItem.create({
@@ -50,10 +65,9 @@ export const addToWishlist = asyncHandler(async (req, res) => {
 export const removeFromWishlist = asyncHandler(async (req, res) => {
   const userId = req.user.id;
   const { productId } = req.params;
-  console.log(productId);
 
   if (!mongoose.Types.ObjectId.isValid(productId)) {
-    throw new CustomError("Invalid productId", 400);
+    throw new CustomError("Invalid product", 400);
   }
 
   const deleted = await WishlistItem.findOneAndDelete({

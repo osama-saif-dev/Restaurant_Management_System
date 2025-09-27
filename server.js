@@ -7,6 +7,8 @@ import dashboardRouter from "./routes/dashboardRouter.route.js";
 import userRouter from "./routes/userRouter.route.js";
 import wishlistRoutes from "./routes/wishlistRoutes.route.js";
 import CartRoutes from "./routes/cartRoutes.route.js";
+import OrderRoutes from "./routes/orderRoutes.route.js";
+import ShippingMethodsRoutes from "./routes/shippingRoutes.route.js";
 
 // Setup
 config();
@@ -22,6 +24,8 @@ app.use("/api/admin", dashboardRouter);
 app.use("/user", userRouter);
 app.use("/api/wishlist", wishlistRoutes);
 app.use("/api/cart", CartRoutes);
+app.use("/api/order", OrderRoutes);
+app.use("/api/shipping-method", ShippingMethodsRoutes);
 
 // Handle Errors
 app.use((err, req, res, next) => {
