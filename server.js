@@ -1,10 +1,16 @@
 import express from "express";
-import { config } from 'dotenv';
+import { config } from "dotenv";
 import connectDb from "./utils/db.js";
 import cors from "cors";
 import authRouter from "./routes/authRouter.route.js";
 import dashboardRouter from "./routes/dashboardRouter.route.js";
 import userRouter from "./routes/userRouter.route.js";
+import wishlistRoutes from "./routes/wishlistRoutes.route.js";
+import CartRoutes from "./routes/cartRoutes.route.js";
+import OrderRoutes from "./routes/orderRoutes.route.js";
+import ShippingMethodsRoutes from "./routes/shippingRoutes.route.js";
+import reservationRoutes from "./routes/reservationRoutes.route.js";
+import tableRoutes from "./routes/tableRoutes.route.js";
 
 // Setup
 config();
@@ -16,9 +22,15 @@ app.use(cors());
 app.use(express.static('public'));
 
 // Routes
-app.use('/api/auth', authRouter);
-app.use('/api/admin', dashboardRouter);
-app.use('/api/user', userRouter);
+app.use("/api/auth", authRouter);
+app.use("/api/admin", dashboardRouter);
+app.use("/api/wishlist", wishlistRoutes);
+app.use("/api/cart", CartRoutes);
+app.use("/api/order", OrderRoutes);
+app.use("/api/shipping-method", ShippingMethodsRoutes);
+app.use("/api/tables", tableRoutes);
+app.use("/api/reservation", reservationRoutes);
+
 
 
   // Handle Errors
@@ -26,11 +38,11 @@ app.use((err, req, res, next) => {
   if (err.code === "LIMIT_UNEXPECTED_FILE") {
     return res.status(400).json({ message: "عدد الملفات أكبر من المطلوب" });
   }
-    res.status(err.code || 500).json({
-        success: false,
-        message: err.message || 'Server Error',
-        errors: err.errors || null
-    });
+  res.status(err.code || 500).json({
+    success: false,
+    message: err.message || "Server Error",
+    errors: err.errors || null,
+  });
 });
 
 // Start Server
