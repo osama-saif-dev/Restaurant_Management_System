@@ -21,6 +21,10 @@ const userSchema = new mongoose.Schema({
     codeExpiresAt: {
         type: Date
     },
+    image: {
+        type: String,
+        default: `https://img.freepik.com/free-vector/blue-circle-with-white-user_78370-4707.jpg`
+    },
     isVerified: {
         type: Boolean,
         default: false

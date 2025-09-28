@@ -19,11 +19,11 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 app.use(express.json());
 app.use(cors());
+app.use(express.static('public'));
 
 // Routes
 app.use("/api/auth", authRouter);
 app.use("/api/admin", dashboardRouter);
-app.use("/user", userRouter);
 app.use("/api/wishlist", wishlistRoutes);
 app.use("/api/cart", CartRoutes);
 app.use("/api/order", OrderRoutes);
@@ -31,7 +31,9 @@ app.use("/api/shipping-method", ShippingMethodsRoutes);
 app.use("/api/tables", tableRoutes);
 app.use("/api/reservation", reservationRoutes);
 
-// Handle Errors
+
+
+  // Handle Errors
 app.use((err, req, res, next) => {
   if (err.code === "LIMIT_UNEXPECTED_FILE") {
     return res.status(400).json({ message: "عدد الملفات أكبر من المطلوب" });
