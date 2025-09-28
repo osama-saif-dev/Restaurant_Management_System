@@ -1,18 +1,21 @@
-import nodemailer  from 'nodemailer';
+import nodemailer from "nodemailer";
 
 export const sendEmail = async ({ to, subject, text }) => {
-    const transport = nodemailer.createTransport({
-        service: 'gmail',
-        auth: {
-            user: process.env.EMAIL_USER,
-            pass: process.env.EMAIL_PASS
-        }
-    });
+  const transport = nodemailer.createTransport({
+    service: "gmail",
+    auth: {
+      user: process.env.EMAIL_USER,
+      pass: process.env.EMAIL_PASS,
+    },
+    tls: {
+      rejectUnauthorized: false,
+    },
+  });
 
-    await transport.sendMail({
-        from: process.env.EMAIL_USER,
-        to,
-        subject,
-        text
-    })
-}
+  await transport.sendMail({
+    from: process.env.EMAIL_USER,
+    to,
+    subject,
+    text,
+  });
+};
