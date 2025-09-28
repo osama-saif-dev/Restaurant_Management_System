@@ -41,7 +41,7 @@ const shippingAddressSchema = new mongoose.Schema(
     country: { type: String, required: true },
     phone: { type: String, required: true },
   },
-  { _id: false } // don’t create a separate _id for the subdoc
+  { _id: false }
 );
 
 // Order
@@ -56,7 +56,7 @@ const OrderSchema = new mongoose.Schema(
     shippingMethod: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "ShippingMethod",
-      required: true, // if every order must have a method
+      required: true,
     },
     paymentMethod: { type: String, enum: ["COD", "Card"], default: "COD" },
     paymentStatus: {
