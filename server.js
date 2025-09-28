@@ -9,6 +9,8 @@ import wishlistRoutes from "./routes/wishlistRoutes.route.js";
 import CartRoutes from "./routes/cartRoutes.route.js";
 import OrderRoutes from "./routes/orderRoutes.route.js";
 import ShippingMethodsRoutes from "./routes/shippingRoutes.route.js";
+import reservationRoutes from "./routes/reservationRoutes.route.js";
+import tableRoutes from "./routes/tableRoutes.route.js";
 
 // Setup
 config();
@@ -26,6 +28,8 @@ app.use("/api/wishlist", wishlistRoutes);
 app.use("/api/cart", CartRoutes);
 app.use("/api/order", OrderRoutes);
 app.use("/api/shipping-method", ShippingMethodsRoutes);
+app.use("/api/tables", tableRoutes);
+app.use("/api/reservation", reservationRoutes);
 
 // Handle Errors
 app.use((err, req, res, next) => {
