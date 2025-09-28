@@ -19,7 +19,6 @@ export const signup = asyncHandler(async (req, res) => {
     const validationData = schemaResponse(signupSchema, {
         name, email, password, password_confirmation
     });
-    // if (!validationData) throw new CustomError('Validation Error');
 
     const existedUser = await User.findOne({ email });
     if (existedUser) throw new CustomError('Email already exists', 400, {

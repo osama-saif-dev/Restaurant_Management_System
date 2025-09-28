@@ -1,8 +1,109 @@
 import { asyncHandler } from "../components/asyncHandler.js";
 import Offer from "../models/offers.js";
+import Product from "../models/products.js";
+import CustomError from "../components/customErrors.js";
+import Review from "../models/review.js";
+import User from "../models/users.js";
 
+// Offers
 export const getOffers = asyncHandler(async (req, res) => {
     const offers = await Offer.find({ endDate: { $gt: new Date() } });
     res.status(200).json({ status: 'success', offers });
+});
+
+// Product Details
+export const productDetails = asyncHandler(async (req, res) => {
+    const { id } = req.params;
+    const product = await Product.findById(id);
+    if (!product) {
+        throw new CustomError('Product not found', 404);
+    }
+    const similarProducts = await Product.find({ subcategoryId: product.subcategoryId, _id: { $ne: id } });
+    res.status(200).json({ status: 'success', product, similarProducts });
+});
+
+// Create Review
+export const createReview = asyncHandler(async (req, res) => {
+    const user = req.user;
+    const { productId, rating, comment } = req.body;
+    if (!productId || !rating || !comment) {
+        throw new CustomError('All fields are required', 400);
+    }
+    const product = await Product.findById(productId);
+    if (!product) {
+        throw new CustomError('Product not found', 404);
+    }   
+    const review = {
+        userId: user._id,
+        productId,
+        rating,
+        comment
+    };  
+    await Review.create(review);
+    res.status(200).json({ status: 'success', message: 'Review added successfully', review });
+});
+
+// Get Reviews
+export const getReviews = asyncHandler(async (req, res) => {
+    const { productId } = req.params;
+    const reviews = await Review.find({ productId }).populate('userId');
+    res.status(200).json({ status: 'success', reviews });
+});
+
+// Delete Review
+export const deleteReview = asyncHandler(async (req, res) => {
+    const { reviewId } = req.params;
+    const review = await Review.findByIdAndDelete(reviewId);
+    if (!review) {
+        throw new CustomError('Review not found', 404);
+    }
+    res.status(200).json({ status: 'success', message: 'Review deleted successfully' });
+});
+
+// update Review
+export const updateReview = asyncHandler(async (req, res) => {
+    const { reviewId } = req.params;
+    const { rating, comment } = req.body;
+    const user = req.user;
+
+    if (!rating || !comment) {
+        throw new CustomError('All fields are required', 400);
+    }
+
+    const review = await Review.findById(reviewId);
+    if (!review) {
+        throw new CustomError('Review not found', 404);
+    }
+
+    if (review.userId.toString() !== user._id.toString()) {
+        throw new CustomError('Not authorized to update this review', 403);
+    }
+
+    review.rating = rating;
+    review.comment = comment;
+    await review.save();
+
+    res.status(200).json({
+        status: 'success',
+        message: 'Review updated successfully',
+        review,
+    });
+});
+
+
+// Update Profile
+export const updateProfile = asyncHandler(async (req, res) => {
+    const user = req.user;
+    const { name } = req.body;
+    if ((!name || name.trim() === '' ) && !req.file) {
+        throw new CustomError('Data is required', 400);
+    }
+    if (name) {
+        user.name = name;
+    }else {
+        user.image = req.file.path;
+    }
+    await user.save();
+    res.status(200).json({ status: 'success', message: 'Profile updated successfully', user });
 });
 
