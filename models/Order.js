@@ -29,6 +29,21 @@ const statusHistorySchema = new mongoose.Schema(
   { _id: false }
 );
 
+// Shipping address
+const shippingAddressSchema = new mongoose.Schema(
+  {
+    fullName: { type: String, required: true },
+    addressLine1: { type: String, required: true },
+    addressLine2: String,
+    city: { type: String, required: true },
+    state: String,
+    postalCode: { type: String, required: true },
+    country: { type: String, required: true },
+    phone: { type: String, required: true },
+  },
+  { _id: false } // don’t create a separate _id for the subdoc
+);
+
 // Order
 const OrderSchema = new mongoose.Schema(
   {
@@ -54,7 +69,7 @@ const OrderSchema = new mongoose.Schema(
       enum: ["pending", "confirmed", "preparing", "delivered", "cancelled"],
       default: "pending",
     },
-    shippingAddress: String,
+    shippingAddress: shippingAddressSchema,
     statusHistory: [statusHistorySchema],
   },
   { timestamps: true }

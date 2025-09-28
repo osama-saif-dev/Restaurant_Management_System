@@ -4,18 +4,24 @@ import CustomError from "../components/customErrors.js";
 import Cart from "../models/Cart.js";
 import Order from "../models/Order.js";
 import ShippingMethod from "../models/ShippingMethod.js";
+import { schemaResponse } from "../components/schemaResponse.js";
+import {
+  createOrderSchema,
+  updateOrderStatusSchema,
+} from "../validations/order.validation.js";
 
-// Create order
+/**
+ * @des Create order
+ * @route POST /api/orders
+ * @access User
+ */
 export const createOrder = asyncHandler(async (req, res) => {
   // 1. get the user and data (Shipping Address, Payment Method)
   const userId = req.user.id;
+  // Validate body
+  schemaResponse(createOrderSchema, req.body);
   const { shippingAddress, paymentMethod = "COD", shippingMethodId } = req.body;
 
-  if (!shippingAddress || !shippingMethodId)
-    throw new CustomError(
-      "Shipping address and shipping method is required",
-      400
-    );
   if (!mongoose.Types.ObjectId.isValid(shippingMethodId))
     throw new CustomError("Shipping method is invalid", 400);
 
@@ -90,7 +96,11 @@ export const createOrder = asyncHandler(async (req, res) => {
   res.status(201).json({ message: "Order placed successfully", order });
 });
 
-// Get my orders
+/**
+ * @des Get my orders
+ * @route GET /api/orders/me
+ * @access User
+ */
 export const getMyOrders = asyncHandler(async (req, res) => {
   const orders = await Order.find({ user: req.user.id })
     .sort("-createdAt")
@@ -99,7 +109,11 @@ export const getMyOrders = asyncHandler(async (req, res) => {
   res.status(200).json(orders);
 });
 
-// Get order by id
+/**
+ * @des Get order by id
+ * @route GET /api/orders/:id
+ * @access User
+ */
 export const getOrderById = asyncHandler(async (req, res) => {
   const orderId = req.params.id;
   if (!mongoose.Types.ObjectId.isValid(orderId))
@@ -116,7 +130,11 @@ export const getOrderById = asyncHandler(async (req, res) => {
   res.status(200).json(order);
 });
 
-// Get All Orders (Admin only)
+/**
+ * @des Get all orders
+ * @route GET /api/orders
+ * @access Admin
+ */
 export const getAllOrders = asyncHandler(async (req, res) => {
   const orders = await Order.find()
     .populate("user", "name email")
@@ -131,7 +149,11 @@ export const getAllOrders = asyncHandler(async (req, res) => {
   });
 });
 
-// updateOrderStatus (Admin only)
+/**
+ * @des Update order status
+ * @route PATCH /api/orders/:id/status
+ * @access Admin
+ */
 export const updateOrderStatus = asyncHandler(async (req, res) => {
   const { id } = req.params; // order ID
   const { newStatus } = req.body;
@@ -139,7 +161,9 @@ export const updateOrderStatus = asyncHandler(async (req, res) => {
 
   if (!mongoose.Types.ObjectId.isValid(id))
     throw new CustomError("Invalid Order", 400);
-  if (!newStatus) throw new CustomError("Status is required", 400);
+
+  // Validate status
+  schemaResponse(updateOrderStatusSchema, req.body);
 
   const order = await Order.findById(id);
   if (!order) throw new CustomError("Order not found", 404);
