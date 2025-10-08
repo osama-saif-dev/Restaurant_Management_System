@@ -4,6 +4,7 @@ import Product from "../models/products.js";
 import CustomError from "../components/customErrors.js";
 import Review from "../models/review.js";
 import User from "../models/users.js";
+import apiFeatures from "../utils/apiFeatures.js";
 
 // Offers
 export const getOffers = asyncHandler(async (req, res) => {
@@ -32,13 +33,13 @@ export const createReview = asyncHandler(async (req, res) => {
     const product = await Product.findById(productId);
     if (!product) {
         throw new CustomError('Product not found', 404);
-    }   
+    }
     const review = {
         userId: user._id,
         productId,
         rating,
         comment
-    };  
+    };
     await Review.create(review);
     res.status(200).json({ status: 'success', message: 'Review added successfully', review });
 });
@@ -90,20 +91,34 @@ export const updateReview = asyncHandler(async (req, res) => {
     });
 });
 
-
 // Update Profile
 export const updateProfile = asyncHandler(async (req, res) => {
     const user = req.user;
     const { name } = req.body;
-    if ((!name || name.trim() === '' ) && !req.file) {
+    if ((!name || name.trim() === '') && !req.file) {
         throw new CustomError('Data is required', 400);
     }
     if (name) {
         user.name = name;
-    }else {
+    } else {
         user.image = req.file.path;
     }
     await user.save();
     res.status(200).json({ status: 'success', message: 'Profile updated successfully', user });
 });
 
+export const getAllProducts = async (req, res) => {
+    const features = new apiFeatures(Product.find(), req.query)
+        .search()
+        .filter()
+        .sort()
+        .paginate();
+
+    const products = await features.query;
+
+    res.status(200).json({
+        success: true,
+        results: products.length,
+        products,
+    });
+}

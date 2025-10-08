@@ -35,7 +35,7 @@ export const signup = asyncHandler(async (req, res) => {
 
     const token = jwt.sign({ userId: user._id }, process.env.JWT_API_SECRET);
 
-    res.status(201).json({ success: true, token, message: 'Sign Up Successfully' });
+    res.status(201).json({ success: true, token, message: 'Sign Up Successfully, We sent you a verification code, Please Verify Your Email' });
 });
 
 // Resend Code
@@ -92,7 +92,7 @@ export const login = asyncHandler(async (req, res) => {
     
     if (user && !user.isVerified) {
         await sendCode(user);
-        return res.status(400).json({ success: false, message: 'Please Verify Your Email', token })
+        return res.status(400).json({ success: false, message: 'We sent you a verification code, Please Verify Your Email', token })
     }
 
     res.status(200).json({ success: true, token, user })
@@ -116,7 +116,7 @@ export const forgotPassword = asyncHandler(async (req, res) => {
     existedUser.resetPasswordExpires = expires;
     await existedUser.save();
 
-    const link = `http://localhost:5000/reset-password?token=${token}`;
+    const link = `http://localhost:4200/reset-password?token=${token}`;
     await sendEmail({ 
         to: existedUser.email,
         subject: 'Reset password',

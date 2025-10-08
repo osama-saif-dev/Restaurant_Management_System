@@ -11,6 +11,7 @@ import OrderRoutes from "./routes/orderRoutes.route.js";
 import ShippingMethodsRoutes from "./routes/shippingRoutes.route.js";
 import reservationRoutes from "./routes/reservationRoutes.route.js";
 import tableRoutes from "./routes/tableRoutes.route.js";
+import productRouter from "./routes/productRouter.route.js";
 
 // Setup
 config();
@@ -25,13 +26,12 @@ app.use(express.static('public'));
 app.use("/api/auth", authRouter);
 app.use("/api/admin", dashboardRouter);
 app.use("/api/wishlist", wishlistRoutes);
+app.use("/api/products", productRouter);
 app.use("/api/cart", CartRoutes);
 app.use("/api/order", OrderRoutes);
 app.use("/api/shipping-method", ShippingMethodsRoutes);
 app.use("/api/tables", tableRoutes);
 app.use("/api/reservation", reservationRoutes);
-
-
 
   // Handle Errors
 app.use((err, req, res, next) => {

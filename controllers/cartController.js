@@ -8,7 +8,7 @@ import CustomError from "../components/customErrors.js";
 export const getCart = asyncHandler(async (req, res) => {
   const cart = await Cart.findOne({ user: req.user.id }).populate(
     "items.product",
-    "name price discountedPrice image"
+    "id name price discountedPrice image"
   );
 
   const totalPrice = cart.items.reduce(
