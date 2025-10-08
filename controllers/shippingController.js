@@ -8,11 +8,7 @@ import {
   createShippingMethodSchema,
 } from "../validations/shippingMethods.validation.js";
 
-/**
- * @desc Get all active shipping methods
- * @route GET /api/shipping-method
- * @access Public (active only) / Admin (all)
- */
+
 export const listShippingMethods = asyncHandler(async (_req, res) => {
   const isAdmin = req.user?.role === "admin";
 
@@ -36,11 +32,7 @@ export const createShippingMethod = asyncHandler(async (req, res) => {
   res.status(201).json({ message: "Shipping method created", method });
 });
 
-/**
- * @desc Update a shipping method
- * @route PUT /api/shipping-method/:id
- * @access Admin
- */
+
 export const updateShippingMethod = asyncHandler(async (req, res) => {
   const { name, fee, estimatedDays, isActive } = req.body;
 
@@ -59,11 +51,7 @@ export const updateShippingMethod = asyncHandler(async (req, res) => {
   res.status(200).json({ message: "Updated", method });
 });
 
-/**
- * @desc Delete a shipping method
- * @route DELETE /api/shipping-method/:id
- * @access Admin
- */
+
 export const deleteShippingMethod = asyncHandler(async (req, res) => {
   const id = req.params.id;
   if (!mongoose.Types.ObjectId.isValid(id))

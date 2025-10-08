@@ -10,11 +10,7 @@ import {
   updateOrderStatusSchema,
 } from "../validations/order.validation.js";
 
-/**
- * @des Create order
- * @route POST /api/orders
- * @access User
- */
+
 export const createOrder = asyncHandler(async (req, res) => {
   // 1. get the user and data (Shipping Address, Payment Method)
   const userId = req.user.id;
@@ -96,11 +92,7 @@ export const createOrder = asyncHandler(async (req, res) => {
   res.status(201).json({ message: "Order placed successfully", order });
 });
 
-/**
- * @des Get my orders
- * @route GET /api/orders/me
- * @access User
- */
+
 export const getMyOrders = asyncHandler(async (req, res) => {
   const orders = await Order.find({ user: req.user.id })
     .sort("-createdAt")
@@ -109,11 +101,7 @@ export const getMyOrders = asyncHandler(async (req, res) => {
   res.status(200).json(orders);
 });
 
-/**
- * @des Get order by id
- * @route GET /api/orders/:id
- * @access User
- */
+
 export const getOrderById = asyncHandler(async (req, res) => {
   const orderId = req.params.id;
   if (!mongoose.Types.ObjectId.isValid(orderId))
@@ -130,11 +118,7 @@ export const getOrderById = asyncHandler(async (req, res) => {
   res.status(200).json(order);
 });
 
-/**
- * @des Get all orders
- * @route GET /api/orders
- * @access Admin
- */
+
 export const getAllOrders = asyncHandler(async (req, res) => {
   const orders = await Order.find()
     .populate("user", "name email")
@@ -149,11 +133,7 @@ export const getAllOrders = asyncHandler(async (req, res) => {
   });
 });
 
-/**
- * @des Update order status
- * @route PATCH /api/orders/:id/status
- * @access Admin
- */
+
 export const updateOrderStatus = asyncHandler(async (req, res) => {
   const { id } = req.params; // order ID
   const { newStatus } = req.body;

@@ -4,11 +4,7 @@ import WishlistItem from "../models/WishlistItem.js";
 import Product from "../models/products.js";
 import CustomError from "../components/customErrors.js";
 
-/**
- * @des Get user wishlist
- * @route GET /api/wishlist
- * @access User
- */
+
 export const getWishlist = asyncHandler(async (req, res) => {
   const userId = req.user.id;
   if (!userId) throw new CustomError("User not found", 404);
@@ -23,11 +19,7 @@ export const getWishlist = asyncHandler(async (req, res) => {
   return res.json({ items, count: items.length });
 });
 
-/**
- * @des Add product to wishlist
- * @route POST /api/wishlist/:productId
- * @access User
- */
+
 export const addToWishlist = asyncHandler(async (req, res) => {
   const userId = req.user.id;
   const { productId } = req.params;
@@ -72,11 +64,7 @@ export const addToWishlist = asyncHandler(async (req, res) => {
     .json({ message: "Added to wishlist", item: populated });
 });
 
-/**
- * @des Remove product from wishlist
- * @route DELETE /api/wishlist/:productId
- * @access User
- */
+
 export const removeFromWishlist = asyncHandler(async (req, res) => {
   const userId = req.user.id;
   const { productId } = req.params;
@@ -95,11 +83,7 @@ export const removeFromWishlist = asyncHandler(async (req, res) => {
   return res.json({ message: "Removed from wishlist" });
 });
 
-/**
- * @des Clear wishlist
- * @route DELETE /api/wishlist
- * @access User
- */
+
 export const clearWishlist = asyncHandler(async (req, res) => {
   const userId = req.user.id;
   await WishlistItem.deleteMany({ user: userId });

@@ -7,11 +7,7 @@ import {
   updateTableSchema,
 } from "../validations/table.validation.js";
 
-/**
- * @desc   Create a new table
- * @route  POST /api/tables
- * @access Admin
- */
+
 export const createTable = asyncHandler(async (req, res) => {
   const { tableNumber, capacity, location, image } = req.body;
 
@@ -27,32 +23,17 @@ export const createTable = asyncHandler(async (req, res) => {
   res.status(201).json({ message: "Table created successfully", table });
 });
 
-/**
- * @desc   Get all tables
- * @route  GET /api/tables
- * @access Public
- */
 export const getTables = asyncHandler(async (req, res) => {
   const tables = await Table.find().sort({ tableNumber: 1 }).lean();
   res.json({ count: tables.length, tables });
 });
 
-/**
- * @desc   Get a single table by ID
- * @route  GET /api/tables/:id
- * @access Public
- */
 export const getTableById = asyncHandler(async (req, res) => {
   const table = await Table.findById(req.params.id);
   if (!table) throw new CustomError("Table not found", 404);
   res.json(table);
 });
 
-/**
- * @desc   Update a table
- * @route  PUT /api/tables/:id
- * @access Admin
- */
 export const updateTable = asyncHandler(async (req, res) => {
   const { tableNumber, capacity, location, image } = req.body;
 
@@ -76,11 +57,6 @@ export const updateTable = asyncHandler(async (req, res) => {
   res.json({ message: "Table updated successfully", table });
 });
 
-/**
- * @desc   Delete a table
- * @route  DELETE /api/tables/:id
- * @access Admin
- */
 export const deleteTable = asyncHandler(async (req, res) => {
   const table = await Table.findByIdAndDelete(req.params.id);
   if (!table) throw new CustomError("Table not found", 404);

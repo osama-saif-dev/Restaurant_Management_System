@@ -9,11 +9,7 @@ import {
   updateQuantitySchema,
 } from "../validations/cart.validation.js";
 
-/**
- * @des Get user cart
- * @route GET /api/cart
- * @access User
- */
+
 export const getCart = asyncHandler(async (req, res) => {
   const cart = await Cart.findOne({ user: req.user.id }).populate(
     "items.product",
@@ -28,11 +24,7 @@ export const getCart = asyncHandler(async (req, res) => {
   res.status(200).json({ ...cart.toObject(), totalPrice } || { items: [] });
 });
 
-/**
- * @des Add product to cart
- * @route POST /api/cart/add
- * @access User
- */
+
 export const addToCart = asyncHandler(async (req, res) => {
   const userId = req.user.id;
   const { productId, quantity = 1 } = req.body;
@@ -92,11 +84,7 @@ export const addToCart = asyncHandler(async (req, res) => {
   res.status(200).json({ message: "Cart updated", cart: populated });
 });
 
-/**
- * @des Update quantity of product in cart
- * @route PATCH /api/cart/update/:productId
- * @access User
- */
+
 export const updateQuantity = asyncHandler(async (req, res) => {
   const { productId } = req.params;
   const { quantity } = req.body;
@@ -133,11 +121,7 @@ export const updateQuantity = asyncHandler(async (req, res) => {
   res.status(200).json({ message: "Quantity updated", cart: populated });
 });
 
-/**
- * @des Remove product from cart
- * @route DELETE /api/cart/remove/:productId
- * @access User
- */
+
 export const removeFromCart = asyncHandler(async (req, res) => {
   const { productId } = req.params;
 
@@ -152,11 +136,7 @@ export const removeFromCart = asyncHandler(async (req, res) => {
   res.status(200).json({ message: "Item removed", cart });
 });
 
-/**
- * @des Clear cart
- * @route DELETE /api/cart
- * @access User
- */
+
 export const clearCart = asyncHandler(async (req, res) => {
   await Cart.findOneAndUpdate({ user: req.user.id }, { $set: { items: [] } });
   res.status(200).json({ message: "Cart cleared" });
