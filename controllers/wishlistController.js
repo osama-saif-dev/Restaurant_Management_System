@@ -11,7 +11,7 @@ export const getWishlist = asyncHandler(async (req, res) => {
   const items = await WishlistItem.find({ user: userId })
     .populate({
       path: "product",
-      select: "name price image isAvailable",
+      select: "id name price image discountedPrice",
     })
     .sort({ createdAt: -1 })
     .lean();
