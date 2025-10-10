@@ -19,7 +19,7 @@ class ApiFeatures {
   filter() {
     const queryObj = { ...this.queryString };
 
-    const excludedFields = ["search", "page", "limit", "sort"];
+    const excludedFields = ["search", "page", "limit", "sort", "min", "max"];
     excludedFields.forEach((el) => delete queryObj[el]);
 
     if (this.queryString.min || this.queryString.max) {

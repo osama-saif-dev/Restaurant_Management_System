@@ -11,10 +11,7 @@ import {
 
 
 export const getCart = asyncHandler(async (req, res) => {
-  const cart = await Cart.findOne({ user: req.user.id }).populate(
-    "items.product",
-    "id name price discountedPrice image"
-  );
+  const cart = await Cart.findOne({ user: req.user.id }).populate("items.product");
 
   const totalPrice = cart.items.reduce(
     (sum, i) => sum + i.priceAtAdd * i.quantity,

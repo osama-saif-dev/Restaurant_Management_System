@@ -23,6 +23,7 @@ app.use(cors());
 app.use(express.static('public'));
 
 // Routes
+app.use("/api/user", userRouter);
 app.use("/api/auth", authRouter);
 app.use("/api/admin", dashboardRouter);
 app.use("/api/wishlist", wishlistRoutes);

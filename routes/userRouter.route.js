@@ -5,6 +5,7 @@ import { protecteRoute } from "../middlewares/protectRoutes.js";
 import upload from "../libs/uploads.js";
 
 const router = express.Router();
+router.get('/get-reviews/:productId', getReviews);
 router.use(protecteRoute);
 
 // Profile
@@ -15,7 +16,6 @@ router.get('/offers', getOffers);
 
 // Reviews 
 router.post('/create-review', createReview);
-router.get('/get-reviews/:productId', getReviews);
 router.delete('/delete-review/:reviewId', deleteReview);
 router.put('/update-review/:reviewId', updateReview);
 
