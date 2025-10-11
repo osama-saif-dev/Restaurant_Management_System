@@ -4,6 +4,7 @@ import Product from "../models/products.js";
 import CustomError from "../components/customErrors.js";
 import Review from "../models/review.js";
 import User from "../models/users.js";
+import subcategory from "../models/subcategories.js";
 import apiFeatures from "../utils/apiFeatures.js";
 
 // Offers
@@ -107,6 +108,7 @@ export const updateProfile = asyncHandler(async (req, res) => {
     res.status(200).json({ status: 'success', message: 'Profile updated successfully', user });
 });
 
+// Get All Products with Search, Filter, Sort, Pagination
 export const getAllProducts = async (req, res) => {
     const features = new apiFeatures(Product.find(), req.query)
         .search()
@@ -122,3 +124,9 @@ export const getAllProducts = async (req, res) => {
         products,
     });
 }
+
+// Get Subategories
+export const getSubcategories = asyncHandler(async (req, res) => {
+    const subcategories = await subcategory.find();
+    res.status(200).json({ status: 'success', subcategories });
+});
