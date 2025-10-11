@@ -110,7 +110,7 @@ export const updateProfile = asyncHandler(async (req, res) => {
 
 // Get All Products with Search, Filter, Sort, Pagination
 export const getAllProducts = async (req, res) => {
-    const features = new apiFeatures(Product.find(), req.query)
+    const features = new apiFeatures(Product.find().populate("offerId"), req.query)
         .search()
         .filter()
         .sort()
