@@ -58,7 +58,8 @@ const OrderSchema = new mongoose.Schema(
       ref: "ShippingMethod",
       required: true,
     },
-    paymentMethod: { type: String, enum: ["COD", "Card"], default: "COD" },
+    paymentIntentId: String, // for Stripe payments
+    paymentMethod: { type: String, enum: ["COD", "Stripe"], default: "COD" },
     paymentStatus: {
       type: String,
       enum: ["pending", "paid", "failed"],

@@ -7,6 +7,7 @@ import {
   getMyOrders,
   getOrderById,
   updateOrderStatus,
+  markOrderPaid,
 } from "../controllers/orderController.js";
 
 const router = express.Router();
@@ -20,6 +21,8 @@ router.patch("/:id/status", checkRole("admin"), updateOrderStatus);
 // Routes
 router.post("/", createOrder);
 router.get("/", getMyOrders);
+
+router.get("/:id/mark-paid", markOrderPaid);
 router.get("/:id", getOrderById);
 
 export default router;

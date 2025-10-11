@@ -10,18 +10,18 @@ import {
   updateOrderStatusSchema,
 } from "../validations/order.validation.js";
 
+import Stripe from "stripe";
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
+// Create Order
 export const createOrder = asyncHandler(async (req, res) => {
-  // 1. get the user and data (Shipping Address, Payment Method)
   const userId = req.user.id;
-  // Validate body
   schemaResponse(createOrderSchema, req.body);
   const { shippingAddress, paymentMethod = "COD", shippingMethodId } = req.body;
 
   if (!mongoose.Types.ObjectId.isValid(shippingMethodId))
     throw new CustomError("Shipping method is invalid", 400);
 
-  // 2. get the cart
   const cart = await Cart.findOne({ user: userId }).populate(
     "items.product",
     "name price discountedPrice image quantity"
@@ -29,19 +29,16 @@ export const createOrder = asyncHandler(async (req, res) => {
   if (!cart) throw new CustomError("Cart not found", 404);
   if (cart.items.length === 0) throw new CustomError("Cart is empty", 400);
 
-  // Validate shipping method
   const shippingMethod = await ShippingMethod.findById(shippingMethodId);
   if (!shippingMethod || !shippingMethod.isActive) {
     throw new CustomError("Invalid or inactive shipping method", 400);
   }
 
-  // 3. Check stock and build items
   let subtotal = 0;
   const orderItems = [];
 
   for (const item of cart.items) {
     const product = item.product;
-    // check if quantity is available
     if (item.quantity > product.quantity) {
       throw new CustomError(
         `Only ${item.product.quantity} units available`,
@@ -60,19 +57,26 @@ export const createOrder = asyncHandler(async (req, res) => {
       priceAtOrder: price,
     });
 
-    // Reduce stock
     product.quantity -= item.quantity;
     await product.save();
   }
 
-  // calculate total
-  // **TODO: STATIC TAX OF 10% ON SUBTOTAL BUT NEED TO MAKE IT DYNAMIC **
   const taxRate = 0.1;
-  const tax = +(subtotal * taxRate).toFixed(2); // TODO: GETTING TAX FROM CONFIG
+  const tax = +(subtotal * taxRate).toFixed(2);
   const deliveryFee = shippingMethod.fee;
   const total = +(subtotal + tax + deliveryFee).toFixed(2);
 
-  // 4. create order
+  // لو طريقة الدفع Stripe نعمل PaymentIntent
+  let paymentIntent;
+  if (paymentMethod === "Stripe") {
+    paymentIntent = await stripe.paymentIntents.create({
+      amount: Math.round(total * 100), // بالـ cents
+      currency: "usd",
+      metadata: { userId },
+      description: "Order Payment",
+    });
+  }
+
   const order = await Order.create({
     user: userId,
     items: orderItems,
@@ -83,13 +87,36 @@ export const createOrder = asyncHandler(async (req, res) => {
     shippingMethod,
     shippingAddress,
     paymentMethod,
+    paymentIntentId: paymentIntent ? paymentIntent.id : null,
   });
 
-  // 5. clear cart
   cart.items = [];
   await cart.save();
 
-  res.status(201).json({ message: "Order placed successfully", order });
+  // Response based on payment method
+  if (paymentMethod === "Stripe") {
+    res.status(201).json({
+      message: "Stripe payment initiated",
+      clientSecret: paymentIntent.client_secret,
+      orderId: order._id,
+    });
+  } else {
+    res.status(201).json({
+      message: "Order placed successfully (Cash on Delivery)",
+      order,
+    });
+  }
+});
+
+// Mark Order as Paid (for Stripe orders)
+export const markOrderPaid = asyncHandler(async (req, res) => {
+  const order = await Order.findOne({ _id: req.params.id, user: req.user.id });
+  if (!order) throw new CustomError("Order not found", 404);
+
+  order.paymentStatus = "paid";
+  await order.save();
+
+  res.json({ message: "Order marked as paid", order });
 });
 
 
@@ -100,7 +127,6 @@ export const getMyOrders = asyncHandler(async (req, res) => {
   // .populate("shippingMethod", "name fee");
   res.status(200).json(orders);
 });
-
 
 export const getOrderById = asyncHandler(async (req, res) => {
   const orderId = req.params.id;
@@ -118,7 +144,6 @@ export const getOrderById = asyncHandler(async (req, res) => {
   res.status(200).json(order);
 });
 
-
 export const getAllOrders = asyncHandler(async (req, res) => {
   const orders = await Order.find()
     .populate("user", "name email")
@@ -132,7 +157,6 @@ export const getAllOrders = asyncHandler(async (req, res) => {
     orders,
   });
 });
-
 
 export const updateOrderStatus = asyncHandler(async (req, res) => {
   const { id } = req.params; // order ID

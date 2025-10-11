@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 // Allowed values
-const paymentMethods = ["COD", "Card"];
+const paymentMethods = ["COD", "Stripe"];
 const orderStatuses = [
   "pending",
   "confirmed",
