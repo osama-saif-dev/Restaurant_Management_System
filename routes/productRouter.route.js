@@ -5,7 +5,7 @@ const router = express.Router();
 
 // Routes 
 router.get('/', getAllProducts);
-router.get("/:id", productDetails);
 router.get("/get-subcategories", getSubcategories)
+router.get("/:id", productDetails);
 
 export default router;

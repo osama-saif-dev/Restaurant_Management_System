@@ -4,7 +4,7 @@ import Product from "../models/products.js";
 import CustomError from "../components/customErrors.js";
 import Review from "../models/review.js";
 import User from "../models/users.js";
-import subcategory from "../models/subcategories.js";
+import Subcategory from "../models/subcategories.js";
 import apiFeatures from "../utils/apiFeatures.js";
 
 // Offers
@@ -92,6 +92,14 @@ export const updateReview = asyncHandler(async (req, res) => {
     });
 });
 
+// Get Testimonials
+export const getTestimonials = asyncHandler(async (req, res) => {
+    const testimonials = await Review.find({
+        rating: { $gte: 4 }
+    }).populate('userId').populate('productId');
+    res.status(200).json({ status: 'success', testimonials });
+});
+
 // Update Profile
 export const updateProfile = asyncHandler(async (req, res) => {
     const user = req.user;
@@ -127,6 +135,6 @@ export const getAllProducts = async (req, res) => {
 
 // Get Subategories
 export const getSubcategories = asyncHandler(async (req, res) => {
-    const subcategories = await subcategory.find();
+    const subcategories = await Subcategory.find();
     res.status(200).json({ status: 'success', subcategories });
 });
