@@ -5,7 +5,7 @@ import CustomError from "../components/customErrors.js";
 import Review from "../models/review.js";
 import User from "../models/users.js";
 import Subcategory from "../models/subcategories.js";
-import apiFeatures from "../utils/apiFeatures.js";
+import ApiFeatures from "../utils/apiFeatures.js";
 
 // Offers
 export const getOffers = asyncHandler(async (req, res) => {
@@ -118,20 +118,28 @@ export const updateProfile = asyncHandler(async (req, res) => {
 
 // Get All Products with Search, Filter, Sort, Pagination
 export const getAllProducts = async (req, res) => {
-    const features = new apiFeatures(Product.find().populate("offerId"), req.query)
-        .search()
-        .filter()
-        .sort()
-        .paginate();
+  const features = new ApiFeatures(Product.find().populate("offerId"), req.query)
+    .search()
+    .filter()
+    .sort();
 
-    const products = await features.query;
+  const totalProducts = await Product.countDocuments(features.query.getFilter());
 
-    res.status(200).json({
-        success: true,
-        results: products.length,
-        products,
-    });
-}
+  features.paginate();
+
+  const products = await features.query;
+  const limit = +req.query.limit || 10;
+  const totalPages = Math.ceil(totalProducts / limit);
+
+  res.status(200).json({
+    success: true,
+    results: products.length,
+    totalProducts,
+    totalPages,
+    products,
+  });
+};
+
 
 // Get Subategories
 export const getSubcategories = asyncHandler(async (req, res) => {
