@@ -8,14 +8,12 @@ const router = express.Router();
 // Opend Routes
 router.get('/get-reviews/:productId', getReviews);
 router.get('/testimonials', getTestimonials);
+router.get('/offers', getOffers);
 
 router.use(protecteRoute);
 
 // Profile
 router.put('/update-profile', upload.single('image'), updateProfile);
-
-// Offers
-router.get('/offers', getOffers);
 
 // Reviews 
 router.post('/create-review', createReview);

@@ -66,16 +66,6 @@ export const createOrder = asyncHandler(async (req, res) => {
   const deliveryFee = shippingMethod.fee;
   const total = +(subtotal + tax + deliveryFee).toFixed(2);
 
-  // لو طريقة الدفع Stripe نعمل PaymentIntent
-  let paymentIntent;
-  if (paymentMethod === "Stripe") {
-    paymentIntent = await stripe.paymentIntents.create({
-      amount: Math.round(total * 100), // بالـ cents
-      currency: "usd",
-      metadata: { userId },
-      description: "Order Payment",
-    });
-  }
 
   const order = await Order.create({
     user: userId,
@@ -87,25 +77,42 @@ export const createOrder = asyncHandler(async (req, res) => {
     shippingMethod,
     shippingAddress,
     paymentMethod,
-    paymentIntentId: paymentIntent ? paymentIntent.id : null,
+    status: "pending",
   });
+
+  if (paymentMethod === "Stripe") {
+    const session = await stripe.checkout.sessions.create({
+      payment_method_types: ["card"],
+      mode: "payment",
+      line_items: orderItems.map((item) => ({
+        price_data: {
+          currency: "usd",
+          product_data: { name: item.name },
+          unit_amount: Math.round(item.priceAtOrder * 100), // بالدولار → سنت
+        },
+        quantity: item.quantity,
+      })),
+      success_url: `${process.env.CLIENT_URL}/payment-success?orderId=${order._id}`,
+      cancel_url: `${process.env.CLIENT_URL}/payment-failed`,
+      metadata: { orderId: order._id.toString(), userId },
+    });
+
+    cart.items = [];
+    await cart.save();
+
+    return res.status(201).json({
+      message: "Stripe checkout session created",
+      url: session.url, 
+    });
+  }
 
   cart.items = [];
   await cart.save();
 
-  // Response based on payment method
-  if (paymentMethod === "Stripe") {
-    res.status(201).json({
-      message: "Stripe payment initiated",
-      clientSecret: paymentIntent.client_secret,
-      orderId: order._id,
-    });
-  } else {
-    res.status(201).json({
-      message: "Order placed successfully (Cash on Delivery)",
-      order,
-    });
-  }
+  res.status(201).json({
+    message: "Order placed successfully (Cash on Delivery)",
+    order,
+  });
 });
 
 // Mark Order as Paid (for Stripe orders)
@@ -114,11 +121,11 @@ export const markOrderPaid = asyncHandler(async (req, res) => {
   if (!order) throw new CustomError("Order not found", 404);
 
   order.paymentStatus = "paid";
+  order.payedAt = Date.now();
   await order.save();
 
   res.json({ message: "Order marked as paid", order });
 });
-
 
 export const getMyOrders = asyncHandler(async (req, res) => {
   const orders = await Order.find({ user: req.user.id })
@@ -144,6 +151,9 @@ export const getOrderById = asyncHandler(async (req, res) => {
   res.status(200).json(order);
 });
 
+
+
+// Admin
 export const getAllOrders = asyncHandler(async (req, res) => {
   const orders = await Order.find()
     .populate("user", "name email")

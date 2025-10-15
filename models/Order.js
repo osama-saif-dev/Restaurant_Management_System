@@ -72,6 +72,7 @@ const OrderSchema = new mongoose.Schema(
     },
     shippingAddress: shippingAddressSchema,
     statusHistory: [statusHistorySchema],
+    payedAt: Date
   },
   { timestamps: true }
 );

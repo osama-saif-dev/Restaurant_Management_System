@@ -140,7 +140,6 @@ export const getAllProducts = async (req, res) => {
   });
 };
 
-
 // Get Subategories
 export const getSubcategories = asyncHandler(async (req, res) => {
     const subcategories = await Subcategory.find();
