@@ -22,5 +22,4 @@ router.post('/create-review', createReview);
 router.delete('/delete-review/:reviewId', deleteReview);
 router.put('/update-review/:reviewId', updateReview);
 
-
 export default router;

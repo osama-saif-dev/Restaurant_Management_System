@@ -104,7 +104,7 @@ export const getTestimonials = asyncHandler(async (req, res) => {
 export const updateProfile = asyncHandler(async (req, res) => {
     const user = req.user;
     const { name } = req.body;
-    if ((!name || name.trim() === '') || !req.file) {
+    if ((!name || name.trim() === '') && !req.file) {
         throw new CustomError('Data is required', 400);
     }
     if (name) {
