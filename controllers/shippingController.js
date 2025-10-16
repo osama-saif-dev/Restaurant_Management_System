@@ -9,7 +9,7 @@ import {
 } from "../validations/shippingMethods.validation.js";
 
 
-export const listShippingMethods = asyncHandler(async (_req, res) => {
+export const listShippingMethods = asyncHandler(async (req, res) => {
   const isAdmin = req.user?.role === "admin";
 
   const filter = isAdmin ? {} : { isActive: true };
@@ -18,11 +18,7 @@ export const listShippingMethods = asyncHandler(async (_req, res) => {
   res.status(200).json(methods);
 });
 
-/**
- * @desc Create a new shipping method
- * @route POST /api/shipping-method
- * @access Admin
- */
+
 export const createShippingMethod = asyncHandler(async (req, res) => {
   const { name, fee, estimatedDays } = req.body;
 
