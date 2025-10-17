@@ -24,7 +24,7 @@ export const getCart = asyncHandler(async (req, res) => {
 
 export const addToCart = asyncHandler(async (req, res) => {
   const userId = req.user.id;
-  const { productId, quantity = 1 } = req.body;
+  const { productId, quantity = 1, sizes } = req.body;
 
   if (!mongoose.Types.ObjectId.isValid(productId))
     throw new CustomError("Invalid product", 400);
