@@ -9,8 +9,14 @@ import ApiFeatures from "../utils/apiFeatures.js";
 
 // Offers
 export const getOffers = asyncHandler(async (req, res) => {
-    const offers = await Offer.find({ endDate: { $gt: new Date() } });
-    res.status(200).json({ status: 'success', offers });
+    const currentDate = Date.now();
+    const offers = await Product.find({ 
+        offerId: { $exists: true, $ne: null }
+     }).populate({
+        path: 'offerId',
+        match: { endDate: { $gt: currentDate } }
+     });
+    res.status(200).json({ status: 'success', productsOffers: offers });
 });
 
 // Product Details
