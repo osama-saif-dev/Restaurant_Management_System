@@ -11,10 +11,12 @@ export const addToCartSchema = z.object({
     .min(1, { message: "Quantity must be at least 1" })
     .default(1),
 
-  sizes: z.string().array().refine((size) => {
-    const allowedSizes = ['small', 'meduim', 'large'];
-    return allowedSizes.some((item) => item === size)
-  })
+  sizes: z
+    .string({
+      required_error: "Size is required",
+      invalid_type_error: "Size must be a string",
+    })
+    .min(1, { message: "Size cannot be empty" })
 });
 
 // Update Product Quantity
