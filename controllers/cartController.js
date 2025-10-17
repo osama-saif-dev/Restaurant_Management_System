@@ -69,6 +69,7 @@ export const addToCart = asyncHandler(async (req, res) => {
       product: productId,
       requestedQty,
       priceAtAdd: product.discountedPrice || product.price,
+      sizes
     });
   }
 
