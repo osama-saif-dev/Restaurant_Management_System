@@ -130,8 +130,7 @@ export const markOrderPaid = asyncHandler(async (req, res) => {
 export const getMyOrders = asyncHandler(async (req, res) => {
   const orders = await Order.find({ user: req.user.id })
     .sort("-createdAt")
-    .populate("items.product", "name image quantity priceAtOrder");
-  // .populate("shippingMethod", "name fee");
+    .populate("items.product");
   res.status(200).json(orders);
 });
 
@@ -150,7 +149,6 @@ export const getOrderById = asyncHandler(async (req, res) => {
 
   res.status(200).json(order);
 });
-
 
 
 // Admin
