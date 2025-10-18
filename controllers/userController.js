@@ -108,18 +108,27 @@ export const getTestimonials = asyncHandler(async (req, res) => {
 
 // Update Profile
 export const updateProfile = asyncHandler(async (req, res) => {
-    const user = req.user;
-    const { name } = req.body;
-    if ((!name || name.trim() === '') && !req.file) {
-        throw new CustomError('Data is required', 400);
-    }
-    if (name) {
-        user.name = name;
-    } else {
-        user.image = req.file.path;
-    }
-    await user.save();
-    res.status(200).json({ status: 'success', message: 'Profile updated successfully', user });
+  const user = req.user;
+  const { name } = req.body;
+
+  if ((!name || name.trim() === '') && !req.file) {
+    throw new CustomError('Data is required', 400);
+  }
+  
+  if (name && name.trim() !== '') {
+    user.name = name.trim();
+  }
+  if (req.file) {
+    user.image = req.file.path; 
+  }
+
+  await user.save();
+
+  res.status(200).json({
+    status: 'success',
+    message: 'Profile updated successfully',
+    user,
+  });
 });
 
 // Get All Products with Search, Filter, Sort, Pagination
