@@ -10,11 +10,7 @@ import {
 
 
 export const listShippingMethods = asyncHandler(async (req, res) => {
-  const isAdmin = req.user?.role === "admin";
-
-  const filter = isAdmin ? {} : { isActive: true };
-  const methods = await ShippingMethod.find(filter).sort("-createdAt");
-
+  const methods = await ShippingMethod.find();
   res.status(200).json(methods);
 });
 
