@@ -9,10 +9,7 @@ export const getWishlist = asyncHandler(async (req, res) => {
   const userId = req.user.id;
   if (!userId) throw new CustomError("User not found", 404);
   const items = await WishlistItem.find({ user: userId })
-    .populate({
-      path: "product",
-      select: "id name price image discountedPrice",
-    })
+    .populate("product")
     .sort({ createdAt: -1 })
     .lean();
 
